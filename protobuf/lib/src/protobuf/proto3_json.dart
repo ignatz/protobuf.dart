@@ -57,7 +57,7 @@ Object? _writeToProto3Json(_FieldSet fs, TypeRegistry typeRegistry) {
         case PbFieldType._SINT64_BIT:
         case PbFieldType._SFIXED64_BIT:
         case PbFieldType._FIXED64_BIT:
-          return fieldValue.toString();
+          return (fieldValue as Int64).toInt();
         case PbFieldType._FLOAT_BIT:
         case PbFieldType._DOUBLE_BIT:
           final double value = fieldValue;
@@ -97,8 +97,10 @@ Object? _writeToProto3Json(_FieldSet fs, TypeRegistry typeRegistry) {
     if (fieldInfo.isMapField) {
       jsonValue = (value as PbMap).map((key, entryValue) {
         final mapEntryInfo = fieldInfo as MapFieldInfo;
-        return MapEntry(convertToMapKey(key, mapEntryInfo.keyFieldType),
-            valueToProto3Json(entryValue, mapEntryInfo.valueFieldType));
+        return MapEntry(
+          convertToMapKey(key, mapEntryInfo.keyFieldType),
+          valueToProto3Json(entryValue, mapEntryInfo.valueFieldType),
+        );
       });
     } else if (fieldInfo.isRepeated) {
       jsonValue = (value as PbList)
@@ -107,7 +109,10 @@ Object? _writeToProto3Json(_FieldSet fs, TypeRegistry typeRegistry) {
     } else {
       jsonValue = valueToProto3Json(value, fieldInfo.type);
     }
-    result[fieldInfo.name] = jsonValue;
+
+
+    // result[fieldInfo.name] = jsonValue;
+    result[fieldInfo.protoName] = jsonValue;
   }
   // Extensions and unknown fields are not encoded by proto3 JSON.
   return result;
